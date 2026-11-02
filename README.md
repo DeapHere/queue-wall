@@ -4,7 +4,7 @@ A SeedQueue-style wall for 1.0 random seed runs. One instance generates worlds i
 
 Inspired by SeedQueue for 1.16+, but written from scratch for 1.0 and sharing no code or assets with it.
 
-It's a Fabric mod for your existing 1.0 loader instance (Fabric Loader 0.18.1 with the 1.0 intermediary mappings).
+It's a Fabric mod for your existing 1.0 loader instance (Fabric Loader 0.18.1 or up with the 1.0 intermediary mappings).
 
 ---
 
