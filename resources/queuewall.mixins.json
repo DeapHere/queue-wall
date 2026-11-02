@@ -1,0 +1,20 @@
+{
+  "required": true,
+  "package": "queuewall.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [],
+  "client": [
+    "IntCacheMixin",
+    "BoxPoolMixin",
+    "VecPoolMixin",
+    "ChunkCacheMixin",
+    "MinecraftMixin",
+    "TitleScreenMixin",
+    "WorldRendererMixin",
+    "DebugScreenMixin",
+    "OptionsScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
