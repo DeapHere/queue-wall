@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "queuewall-gentest",
+  "version": "1",
+  "name": "Queue Wall generation test",
+  "description": "Development only: checks that queued worlds are block-for-block identical to worlds made by Create New World.",
+  "environment": "client",
+  "mixins": ["queuewall-gentest.mixins.json"],
+  "depends": {"queuewall": "*"}
+}

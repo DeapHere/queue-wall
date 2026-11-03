@@ -1,0 +1,91 @@
+plugins {
+	id 'fabric-loom' version '1.18-SNAPSHOT'
+	id 'ploceus' version '1.18-SNAPSHOT'
+}
+
+base {
+	archivesName = project.archives_base_name
+}
+version = project.version
+group = project.maven_group
+
+// the few calls that differ between versions live in src/compat/<version>/java
+def compatDir = project.minecraft_version.startsWith('1.0') ? '1.0' : '1.1'
+
+sourceSets {
+	main {
+		java.srcDir "src/compat/${compatDir}/java"
+	}
+	// development only: the block-for-block generation test (./gradlew runGenTest), never part of the jar
+	gentest {
+		compileClasspath += main.compileClasspath + main.output
+		runtimeClasspath += main.runtimeClasspath + main.output
+	}
+}
+
+loom {
+	// 1.0 has no server in the version manifest, and the mod is client only
+	clientOnlyMinecraftJar()
+
+	mods {
+		queuewall {
+			sourceSet sourceSets.main
+		}
+		"queuewall-gentest" {
+			sourceSet sourceSets.gentest
+		}
+	}
+
+	runs {
+		genTest {
+			client()
+			name = 'Generation test'
+			source sourceSets.gentest
+			runDir 'run/gentest'
+		}
+	}
+}
+
+ploceus {
+	// the 1.0 instance (MultiMC/Prism "Intermediary Mappings" component) uses calamus-intermediary gen1
+	setIntermediaryGeneration(1)
+	clientOnlyMappings()
+}
+
+dependencies {
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	exceptions ploceus.raven(project.raven_build)
+	// not every version has signature patches (1.2.5 has none): leave sparrow_build empty for those
+	if (project.sparrow_build) {
+		signatures ploceus.sparrow(project.sparrow_build)
+	}
+	nests ploceus.nests(project.nests_build)
+	mappings ploceus.featherMappings(project.feather_build)
+
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+}
+
+processResources {
+	inputs.property 'version', version
+	inputs.property 'minecraft_version', project.minecraft_version
+	filesMatching('fabric.mod.json') {
+		expand 'version': version, 'minecraft_version': project.minecraft_version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.encoding = 'UTF-8'
+	it.options.release = 8
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+	withSourcesJar()
+}
+
+jar {
+	from('LICENSE') {
+		rename { "${it}_${base.archivesName.get()}" }
+	}
+}

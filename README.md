@@ -4,7 +4,7 @@ A SeedQueue-style wall for Minecraft 1.0 random seed runs. One instance generate
 
 Inspired by SeedQueue for 1.16+, but written from scratch for 1.0. It shares no code or assets with SeedQueue.
 
-Fabric mod for Minecraft 1.0 (Fabric Loader 0.18.1 or newer, with Ornithe intermediary mappings). Works with OptiFine 1.0.0 HD D3 through OptiFabric.
+Fabric mod for Minecraft 1.0 (Fabric Loader 0.18.1 or newer, with Ornithe intermediary mappings). The code also builds for 1.1 and 1.2.5 (see Building).
 
 > **Status:** Queue Wall is not on legal-builds yet and is waiting on approval from the 1.0 moderators. Under rule A.8.5, runs using it can't be submitted until it's approved.
 
@@ -21,21 +21,23 @@ Fabric mod for Minecraft 1.0 (Fabric Loader 0.18.1 or newer, with Ornithe interm
 
 - Worlds are created the same way as Create New World with an empty seed box: a random seed from `new Random().nextLong()`, survival, structures on, not hardcore.
 - A queued world only gets what vanilla's "Building terrain" step gives it: the same 17x17 chunks around spawn, in the same order, with the same lighting. It's never ticked while it waits.
-- Playing a world goes through vanilla's normal `startWorld`, so Building terrain, Simulating world, stats and the player spawn run exactly as in vanilla.
-- The preview is drawn from the spawn point, facing north like a new player, with the player's FOV. It only draws terrain the world already has, never farther than the in-game render distance, with no entities.
+- Queued worlds are built by vanilla's own code: the `World` constructor and `Minecraft.prepareWorld` (the Building terrain step), run on a background thread.
+- Playing a world goes through vanilla's normal `startGame`, so Simulating world, stats and the player spawn run exactly as in vanilla.
+- The preview is drawn by vanilla's `GameRenderer.renderWorld` from the camera of the player vanilla creates for the world: at the spawn point, facing north. It only draws terrain the world already has, never farther than the in-game render distance, with no entities.
 - Nothing reads the seed, and worlds are shown in the order they were queued. Nothing sorts or filters them.
 - Every reset comes from a key press or mouse click (A.10.5).
 - F3 shows `Queue Wall <version>` under the seed line (A.2.11.e).
 - Every wall event is written to the game log (`[Queue Wall] queued / generated / reset / locked / unlocked / played New World N`), so a played world can be matched to the video and world files.
-- Each loading slot shows the Building terrain screen with its real progress and a percentage (A.9.3).
+- Each loading slot shows vanilla's own progress screen for that world, with its real progress and a percentage (A.9.3).
 - Nothing inside a world folder is ever read (A.3.10). Cleanup only looks at folder names and whether `level.dat` exists.
-- 1.0's world generator wasn't written for multiple threads, so a few shared caches are made per-thread on the generator threads (see How it works). Worlds come out block-for-block identical to single-threaded vanilla generation.
+- 1.0's world generator wasn't written for multiple threads, so a few shared caches are made per-thread on the generator threads (see How it works). Worlds come out block-for-block identical to vanilla's Create New World, which the generation test checks (see Building).
 
 ## Install
 
-1. Put `queuewall-<version>.jar` in the instance's `.minecraft/mods` folder.
-2. Start the game. The title screen is unchanged. Create a world through Singleplayer as usual, or press **Y** on the title screen to open the wall.
-3. Settings are in `.minecraft/config/queuewall.properties`, which is created on first start. Restart the game after changing it.
+1. Make a 1.0 instance with Fabric Loader (0.20.1 is current) and Ornithe intermediary, for example from the instance generator at https://mc.sr/mods/generate/.
+2. Put `queuewall-<version>.jar` in the instance's `.minecraft/mods` folder.
+3. Start the game. The title screen is unchanged. Create a world through Singleplayer as usual, or press **Y** on the title screen to open the wall.
+4. Settings are in `.minecraft/config/queuewall.properties`, which is created on first start. Restart the game after changing it.
 
 Each queued world uses roughly 40 MB of memory. The defaults (4 on the wall, 4 behind it) fit in 2 GB. Allocate more for larger queues.
 
@@ -88,19 +90,40 @@ Worlds are named `New World 1`, `New World 2` and so on. Folders with any other 
 
 ## How it works
 
-- **Generation:** background threads each create a world and load the same 17x17 spawn chunks vanilla's Building terrain step loads.
+Queue Wall runs vanilla's own code and changes it only through small Mixin hooks, all in `src/main/java/queuewall/mixin`.
+
+- **Generation:** a generator thread makes a `World` for the queued world's folder and calls vanilla's `Minecraft.prepareWorld`, the Building terrain step that loads the 17x17 spawn chunks. While it runs on that thread, `MinecraftMixin` points its reads of the client's world, player, interaction manager and progress screen at the queued world, and stops it before Simulating world, which runs when the world is played. The player vanilla would create for the world is made the same way vanilla's `setWorld` does and used as the preview camera.
 - **Thread safety:** 1.0 keeps some generation state in static fields. On Queue Wall's generator threads only:
-  1. `IntCache` (the biome layer's array pool) uses one pool per thread, with vanilla's logic.
-  2. The bounding box and vector pools hand out new objects.
-  3. Chunk population (trees, ores, sand) runs one chunk at a time across all threads.
+  1. `IntCache` (the biome layer's array pool) uses one pool per thread, with vanilla's logic (`IntCacheMixin`).
+  2. The bounding box and vector pools hand out new objects (`BoxMixin`, `Vec3dMixin`).
+  3. Chunk population (trees, ores, sand) runs one chunk at a time across all threads (`ChunkCacheMixin`).
 
   The main game thread runs vanilla's code unchanged.
-- **Previews:** each slot has its own world renderer pointed at its queued world. It builds every chunk section nearest-first, then keeps the finished picture, since a queued world never changes.
-- **Playing:** vanilla's `startWorld` is called for the world's folder and given the already-built world in place of a new one. Everything after that is vanilla.
+- **Previews:** each slot has its own vanilla `WorldRenderer` pointed at its queued world. The wall builds its chunk sections nearest first, then draws the slot with vanilla's `GameRenderer.renderWorld` (sky, fog, clouds and terrain), with the client's world, player and window size swapped for the slot's while it draws. The picture is kept once every section is built, since a queued world never changes.
+- **Loading slots:** a world that's still generating is shown with vanilla's `ProgressRenderer`, given the title, stage and percentage `prepareWorld` reported for it.
+- **Playing:** vanilla's `startGame` is called for the world's folder, as Create New World does, and given the already-built world in place of a new one. Everything after that is vanilla.
+- **Reset key in a world:** presses the Game menu's own Save and Quit to Title, then opens the wall.
 
 ## Building
 
-`build.sh` compiles the jar with plain `javac`. The jars it needs are listed at the top of the script. `client-intermediary.jar` is the remapped jar Fabric creates in `.minecraft/.fabric/remappedJars`.
+The project is a standard Fabric Loom build with Ornithe's [Ploceus](https://github.com/OrnitheMC/ploceus) plugin and Feather mappings. Gradle needs JDK 25 or newer (Loom requires it). The mod itself targets Java 8, and the game runs on Java 8 or newer.
+
+```
+./gradlew build          # the jar is in build/libs
+./gradlew runClient      # a development client with the mod
+./gradlew runGenTest     # the generation test (below)
+```
+
+The Minecraft version and mapping builds are in `gradle.properties`. To build for another version, pass them on the command line:
+
+```
+./gradlew build -Pminecraft_version=1.1 -Pnests_build=11
+./gradlew build -Pminecraft_version=1.2.5 -Pnests_build=10 -Psparrow_build=
+```
+
+The few calls that differ between versions are in `src/compat/<version>`.
+
+**Generation test:** `runGenTest` starts the game and, for 12 fixed seeds, creates each world through vanilla's Create New World path and through Queue Wall's queue (three rounds of 12 worlds on 4 threads), then plays one queued world. It compares every block and its data within 120 blocks of spawn, and fails if any world differs. Vanilla itself can place a few trees differently the first time a seed is generated in a session, so the vanilla reference is generated twice and the second run is used. The test passes on 1.0, 1.1 and 1.2.5.
 
 ## License
 

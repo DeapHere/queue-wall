@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "queuewall",
+  "version": "${version}",
+  "name": "Queue Wall",
+  "description": "Generates worlds in the background and shows them on an in-game wall, for 1.0 random seed resetting.",
+  "authors": ["DeapHere"],
+  "contact": {
+    "sources": "https://github.com/DeapHere/queue-wall"
+  },
+  "license": "MIT",
+  "environment": "client",
+  "mixins": ["queuewall.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.18.1",
+    "minecraft": "${minecraft_version}"
+  }
+}
