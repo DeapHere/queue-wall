@@ -4,7 +4,7 @@ A SeedQueue-style wall for Minecraft 1.0 random seed runs. One instance generate
 
 Inspired by SeedQueue for 1.16+, but written from scratch for 1.0. It shares no code or assets with SeedQueue.
 
-Fabric mod for Minecraft 1.0 (Fabric Loader 0.18.1 or newer, with Ornithe intermediary mappings). The code also builds for 1.1 and 1.2.5 (see Building).
+Fabric mod for Minecraft 1.0 (Fabric Loader 0.18.1 or newer, with Ornithe intermediary mappings). The code also builds for 1.1 and 1.2.1 (see Building).
 
 > **Status:** Queue Wall is not on legal-builds yet and is waiting on approval from the 1.0 moderators. Under rule A.8.5, runs using it can't be submitted until it's approved.
 
@@ -118,12 +118,12 @@ The Minecraft version and mapping builds are in `gradle.properties`. To build fo
 
 ```
 ./gradlew build -Pminecraft_version=1.1 -Pnests_build=11
-./gradlew build -Pminecraft_version=1.2.5 -Pnests_build=10 -Psparrow_build=
+./gradlew build -Pminecraft_version=1.2.1 -Pnests_build=10
 ```
 
 The few calls that differ between versions are in `src/compat/<version>`.
 
-**Generation test:** `runGenTest` starts the game and, for 12 fixed seeds, creates each world through vanilla's Create New World path and through Queue Wall's queue (three rounds of 12 worlds on 4 threads), then plays one queued world. It compares every block and its data within 120 blocks of spawn, and fails if any world differs. Vanilla itself can place a few trees differently the first time a seed is generated in a session, so the vanilla reference is generated twice and the second run is used. The test passes on 1.0, 1.1 and 1.2.5.
+**Generation test:** `runGenTest` starts the game and, for 12 fixed seeds, creates each world through vanilla's Create New World path and through Queue Wall's queue (three rounds of 12 worlds on 4 threads), then plays one queued world. It compares every block and its data within 120 blocks of spawn, and fails if any world differs. Vanilla itself can place a few trees differently the first time a seed is generated in a session, so the vanilla reference is generated twice and the second run is used. The test passes on 1.0, 1.1 and 1.2.1.
 
 ## License
 
