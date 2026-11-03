@@ -9,13 +9,7 @@ base {
 version = project.version
 group = project.maven_group
 
-// the few calls that differ between versions live in src/compat/<version>/java
-def compatDir = project.minecraft_version.startsWith('1.0') ? '1.0' : '1.1'
-
 sourceSets {
-	main {
-		java.srcDir "src/compat/${compatDir}/java"
-	}
 	// development only: the block-for-block generation test (./gradlew runGenTest), never part of the jar
 	gentest {
 		compileClasspath += main.compileClasspath + main.output
@@ -54,7 +48,10 @@ ploceus {
 
 dependencies {
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	exceptions ploceus.raven(project.raven_build)
+	// not every version has exception patches (1.2.4 has none): leave raven_build empty for those
+	if (project.raven_build) {
+		exceptions ploceus.raven(project.raven_build)
+	}
 	// not every version has signature patches (1.2.5 has none): leave sparrow_build empty for those
 	if (project.sparrow_build) {
 		signatures ploceus.sparrow(project.sparrow_build)
@@ -67,9 +64,8 @@ dependencies {
 
 processResources {
 	inputs.property 'version', version
-	inputs.property 'minecraft_version', project.minecraft_version
 	filesMatching('fabric.mod.json') {
-		expand 'version': version, 'minecraft_version': project.minecraft_version
+		expand 'version': version
 	}
 }
 

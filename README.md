@@ -4,7 +4,7 @@ A SeedQueue-style wall for Minecraft 1.0 random seed runs. One instance generate
 
 Inspired by SeedQueue for 1.16+, but written from scratch for 1.0. It shares no code or assets with SeedQueue.
 
-Fabric mod for Minecraft 1.0 (Fabric Loader 0.18.1 or newer, with Ornithe intermediary mappings). The code also builds for 1.1 and 1.2.1 (see Building).
+Fabric mod for Minecraft 1.0 (Fabric Loader 0.18.1 or newer, with Ornithe intermediary mappings). The same jar also runs on 1.1 and 1.2.1 to 1.2.5.
 
 > **Status:** Queue Wall is not on legal-builds yet and is waiting on approval from the 1.0 moderators. Under rule A.8.5, runs using it can't be submitted until it's approved.
 
@@ -34,7 +34,7 @@ Fabric mod for Minecraft 1.0 (Fabric Loader 0.18.1 or newer, with Ornithe interm
 
 ## Install
 
-1. Make a 1.0 instance with Fabric Loader (0.20.1 is current) and Ornithe intermediary, for example from the instance generator at https://mc.sr/mods/generate/.
+1. Make a 1.0 instance (or 1.1 to 1.2.5) with Fabric Loader (0.20.1 is current) and Ornithe intermediary, for example from the instance generator at https://mc.sr/mods/generate/.
 2. Put `queuewall-<version>.jar` in the instance's `.minecraft/mods` folder.
 3. Start the game. The title screen is unchanged. Create a world through Singleplayer as usual, or press **Y** on the title screen to open the wall.
 4. Settings are in `.minecraft/config/queuewall.properties`, which is created on first start. Restart the game after changing it.
@@ -114,16 +114,17 @@ The project is a standard Fabric Loom build with Ornithe's [Ploceus](https://git
 ./gradlew runGenTest     # the generation test (below)
 ```
 
-The Minecraft version and mapping builds are in `gradle.properties`. To build for another version, pass them on the command line:
+The Minecraft version and mapping builds are in `gradle.properties`. The build is against 1.0, and the one jar runs on 1.0 to 1.2.5: Ornithe's intermediary names are the same across these versions, so building against any of them gives the same class files. The one call that differs (`WorldSettings` takes a world type from 1.1 on) is picked at runtime in `src/main/java/queuewall/compat/Versions.java`.
+
+To build or test against another version, pass its mapping builds on the command line (1.2.4 has no raven or sparrow build and 1.2.5 no sparrow build, so those are left empty):
 
 ```
-./gradlew build -Pminecraft_version=1.1 -Pnests_build=11
-./gradlew build -Pminecraft_version=1.2.1 -Pnests_build=10
+./gradlew runGenTest -Pminecraft_version=1.1 -Pnests_build=11
+./gradlew runGenTest -Pminecraft_version=1.2.1 -Pnests_build=10
+./gradlew runGenTest -Pminecraft_version=1.2.5 -Pnests_build=10 -Psparrow_build=
 ```
 
-The few calls that differ between versions are in `src/compat/<version>`.
-
-**Generation test:** `runGenTest` starts the game and, for 12 fixed seeds, creates each world through vanilla's Create New World path and through Queue Wall's queue (three rounds of 12 worlds on 4 threads), then plays one queued world. It compares every block and its data within 120 blocks of spawn, and fails if any world differs. Vanilla itself can place a few trees differently the first time a seed is generated in a session, so the vanilla reference is generated twice and the second run is used. The test passes on 1.0, 1.1 and 1.2.1.
+**Generation test:** `runGenTest` starts the game and, for 12 fixed seeds, creates each world through vanilla's Create New World path and through Queue Wall's queue (three rounds of 12 worlds on 4 threads), then plays one queued world. It compares every block and its data within 120 blocks of spawn, and fails if any world differs. Vanilla itself can place a few trees differently the first time a seed is generated in a session, so the vanilla reference is generated twice and the second run is used. The test passes on 1.0, 1.1, 1.2.1 and 1.2.5.
 
 ## License
 

@@ -35,6 +35,9 @@ public final class GenerationTest {
         long[] seeds = new long[SEEDS];
         for (int i = 0; i < SEEDS; i++) seeds[i] = 1000L + i * 7919L;
         int failures = 0;
+        // worlds left from an earlier run (perhaps on another Minecraft version) would be loaded instead of generated
+        File[] old = new File("saves").listFiles((dir, name) -> name.startsWith("gentest-"));
+        if (old != null) for (File f : old) deleteTree(f);
         try {
             Map<Long, Long> reference = new LinkedHashMap<>();
             long t = System.currentTimeMillis();
@@ -163,4 +166,10 @@ public final class GenerationTest {
     }
 
     private GenerationTest() {}
+
+    private static void deleteTree(File f) {
+        File[] children = f.listFiles();
+        if (children != null) for (File c : children) deleteTree(c);
+        f.delete();
+    }
 }

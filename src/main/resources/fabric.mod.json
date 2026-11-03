@@ -13,6 +13,6 @@
   "mixins": ["queuewall.mixins.json"],
   "depends": {
     "fabricloader": ">=0.18.1",
-    "minecraft": "${minecraft_version}"
+    "minecraft": ">=1.0.0 <=1.2.5"
   }
 }
