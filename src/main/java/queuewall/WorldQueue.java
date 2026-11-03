@@ -272,9 +272,9 @@ public final class WorldQueue {
         if (!q.cleanedUp.compareAndSet(false, true)) return;
         try {
             if (cfg.keepResetWorlds && q.world != null && q.storage != null) {
-                // the region format version, as vanilla's own save sets it. without it Select World lists the world as "Must be converted!"
-                q.world.getData().setVersion(19132);
-                q.storage.saveData(q.world.getData());
+                // saved the way World.save saves level.dat, which also stamps the world's region format version
+                // (McRegion in 1.0 and 1.1, Anvil in 1.2). Without it Select World lists the world as "Must be converted!"
+                q.storage.saveData(q.world.getData(), q.world.players);
             } else {
                 deleteDir(new File(savesDir, q.folder));
             }
