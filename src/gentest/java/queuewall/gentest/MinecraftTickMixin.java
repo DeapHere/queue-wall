@@ -19,6 +19,8 @@ public abstract class MinecraftTickMixin {
         if (queuewall$started || !(mc.screen instanceof TitleScreen)) return;
         queuewall$started = true;
         int code = GenerationTest.run(mc);
-        System.exit(code);
+        // halt, not exit: on Windows a shutdown hook can keep the game open after the test is done
+        System.out.flush();
+        Runtime.getRuntime().halt(code);
     }
 }
