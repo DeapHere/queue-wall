@@ -26,6 +26,9 @@ public class WallScreen extends Screen {
 
     @Override
     public void init() {
+        // what opening the title screen does: F3 goes off and the chat is cleared, so neither is left over the wall
+        this.minecraft.options.debugEnabled = false;
+        this.minecraft.gui.clearChat();
         QueueWall.startQueue(this.minecraft);
         QueueWall.onWallOpened();
         QueueWall.queue.topUp();
