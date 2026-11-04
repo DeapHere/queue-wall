@@ -26,14 +26,18 @@ import queuewall.compat.Versions;
  * Each world is hashed over every block id and metadata value within 120 blocks of spawn, plus the spawn point.
  */
 public final class GenerationTest {
-    private static final int SEEDS = 12;
-    private static final int ROUNDS = 3;
+    // -Dqueuewall.gentest.seeds=100 -Dqueuewall.gentest.rounds=1 for a longer run: the first 12 seeds are fixed,
+    // the rest are random like Create New World's (printed in the log)
+    private static final int SEEDS = Integer.getInteger("queuewall.gentest.seeds", 12);
+    private static final int ROUNDS = Integer.getInteger("queuewall.gentest.rounds", 3);
 
     public static int run(Minecraft mc) {
         QueueWall.init(mc);
         int threads = Integer.getInteger("queuewall.gentest.threads", 4);
         long[] seeds = new long[SEEDS];
-        for (int i = 0; i < SEEDS; i++) seeds[i] = 1000L + i * 7919L;
+        java.util.Random random = new java.util.Random();
+        for (int i = 0; i < SEEDS; i++) seeds[i] = i < 12 ? 1000L + i * 7919L : random.nextLong();
+        if (SEEDS > 12) log("seeds: " + java.util.Arrays.toString(seeds));
         int failures = 0;
         // worlds left from an earlier run (perhaps on another Minecraft version) would be loaded instead of generated
         File[] old = new File("saves").listFiles((dir, name) -> name.startsWith("gentest-"));
@@ -112,7 +116,8 @@ public final class GenerationTest {
         mc.interactionManager = new SurvivalInteractionManager(mc);
         mc.startGame(folder, "New World", Versions.newWorldSettings(seed));
         long h = hash(mc.world);
-        int[] snap = snapshot(mc.world);
+        // a block-by-block copy is about 30 MB, so it's only kept for the default 12 seeds
+        int[] snap = SEEDS <= 12 ? snapshot(mc.world) : new int[0];
         int[] before = snapshots.put(seed, snap);
         if (before != null) {
             Vec3i sp = mc.world.getSpawnPoint();
