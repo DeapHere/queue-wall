@@ -64,6 +64,7 @@ public final class QueuedWorld {
     /** Runs on a generator thread. */
     void generate(Minecraft mc, WorldStorageSource storageSource, WorldQueue queue) {
         GENERATING_HERE.set(this);
+        ThreadSafety.freshIntCache();
         try {
             if (cancelled) return;
             state = State.GENERATING;

@@ -271,7 +271,8 @@ public final class WorldQueue {
     void cleanUp(QueuedWorld q) {
         if (!q.cleanedUp.compareAndSet(false, true)) return;
         try {
-            if (cfg.keepResetWorlds && q.world != null && q.storage != null) {
+            // a world that failed to generate was never a real world, so its folder always goes
+            if (cfg.keepResetWorlds && q.state != QueuedWorld.State.FAILED && q.world != null && q.storage != null) {
                 // saved the way World.save saves level.dat, which also stamps the world's region format version
                 // (McRegion in 1.0 and 1.1, Anvil in 1.2). Without it Select World lists the world as "Must be converted!"
                 q.storage.saveData(q.world.getData(), q.world.players);

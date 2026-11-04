@@ -26,6 +26,15 @@ public final class ThreadSafety {
 
     private static final ThreadLocal<IntCacheState> INT_CACHE = ThreadLocal.withInitial(IntCacheState::new);
 
+    /**
+     * Gives this generator thread a fresh IntCache state, the state a new game starts with. Called before every world,
+     * so nothing carries over from the worlds this thread made before, above all ones reset while still generating
+     * (without this, after enough of those the pool could hand out arrays still in use and worlds failed to generate).
+     */
+    public static void freshIntCache() {
+        INT_CACHE.set(new IntCacheState());
+    }
+
     /** This thread's IntCache state, or null for every thread that isn't a generator thread. */
     public static IntCacheState intCache() {
         return GenThread.isCurrent() ? INT_CACHE.get() : null;
