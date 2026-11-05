@@ -34,7 +34,7 @@ Fabric mod for Minecraft 1.0 (Fabric Loader 0.18.1 or newer, with Ornithe interm
 
 ## Install
 
-1. Make a 1.0 instance (or 1.1 to 1.2.5) with Fabric Loader (0.20.1 is current) and Ornithe intermediary, for example from the instance generator at https://mc.sr/mods/generate/.
+1. Make a 1.0 instance (or 1.1 to 1.2.5) with Fabric Loader (0.20.1 is current) and Ornithe intermediary, for example from the instance generator at https://mc.sr/mods/generate/. Ornithe isn't a separate install: in MultiMC or Prism it's the "Intermediary Mappings" component listed under the instance's Version page, next to Fabric Loader.
 2. Put `queuewall-<version>.jar` in the instance's `.minecraft/mods` folder.
 3. Start the game. The title screen is unchanged. Create a world through Singleplayer as usual, or press **Y** on the title screen to open the wall.
 4. Settings are in `.minecraft/config/queuewall.properties`, which is created on first start. Restart the game after changing it.
