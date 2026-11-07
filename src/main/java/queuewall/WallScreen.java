@@ -293,7 +293,7 @@ public class WallScreen extends Screen {
         }
         // a key set to both focus reset and play does focus reset
         boolean focusReset = key == cfg.keyFocusReset;
-        boolean playKey = !focusReset && (key == cfg.keyPlay || key == cfg.keyPlay2);
+        boolean playKey = !focusReset && key == cfg.keyPlay;
         if (playKey && cfg.lockedRow && cfg.playLockedFirst) {
             // the first locked world that's ready, before anything on the wall
             for (QueuedWorld q : locked()) {

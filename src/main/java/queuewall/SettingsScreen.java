@@ -53,7 +53,6 @@ public final class SettingsScreen extends Screen {
         bool("Reset counter", "Writes resets.txt for OBS", () -> c.resetCounter, v -> c.resetCounter = v);
 
         key("Play", () -> c.keyPlay, v -> c.keyPlay = v);
-        key("Play (second key)", () -> c.keyPlay2, v -> c.keyPlay2 = v);
         key("Reset", () -> c.keyReset, v -> c.keyReset = v);
         key("Reset all", () -> c.keyResetAll, v -> c.keyResetAll = v);
         key("Focus reset", () -> c.keyFocusReset, v -> c.keyFocusReset = v);

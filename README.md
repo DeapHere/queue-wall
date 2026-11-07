@@ -85,7 +85,7 @@ Mouse: left click plays, right click resets, Shift + left click locks. Each can 
 | `focusResetPlays` | false | See the F key above |
 | `resetLoadingWorlds` | false | Let the reset keys and right click reset worlds that are still loading |
 | `clickToPlay`, `clickToReset`, `clickToLock` | true | Mouse controls |
-| `keyPlay`, `keyPlay2`, `keyReset`, `keyResetAll`, `keyFocusReset`, `keyLock`, `keyOpenWall`, `keyResetWhilePlaying`, `keyResetWhilePlaying2` | W, NONE, Y, T, F, R, Y, Y, F6 | LWJGL key names. `NONE` disables a key |
+| `keyPlay`, `keyReset`, `keyResetAll`, `keyFocusReset`, `keyLock`, `keyOpenWall`, `keyResetWhilePlaying`, `keyResetWhilePlaying2` | W, Y, T, F, R, Y, Y, F6 | LWJGL key names. `NONE` disables a key |
 
 Worlds are named `New World 1`, `New World 2` and so on. Folders with any other name are never touched.
 

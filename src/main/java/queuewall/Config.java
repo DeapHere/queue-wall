@@ -44,7 +44,6 @@ public final class Config {
     public boolean resetLoadingWorlds = false;
 
     public int keyPlay = Keyboard.KEY_W;
-    public int keyPlay2 = Keyboard.KEY_NONE;
     public int keyReset = Keyboard.KEY_Y;
     public int keyResetAll = Keyboard.KEY_T;
     public int keyFocusReset = Keyboard.KEY_F;
@@ -152,7 +151,6 @@ public final class Config {
         c.playLockedFirst = b(p, "playLockedFirst", c.playLockedFirst);
         c.chainLockedWorlds = b(p, "chainLockedWorlds", c.chainLockedWorlds);
         c.keyPlay = k(p, "keyPlay", c.keyPlay);
-        c.keyPlay2 = k(p, "keyPlay2", c.keyPlay2);
         c.keyReset = k(p, "keyReset", c.keyReset);
         c.keyResetAll = k(p, "keyResetAll", c.keyResetAll);
         c.keyFocusReset = k(p, "keyFocusReset", c.keyFocusReset);
@@ -217,7 +215,7 @@ public final class Config {
             w.write("# with both set, the area holds lockedRows x lockedColumns worlds and lockedMax is ignored\n");
             w.write("lockedRows=" + lockedRows + "\n");
             w.write("lockedColumns=" + lockedColumns + "\n\n");
-            w.write("# the play keys play the first locked world (oldest lock) while there is one, wherever the mouse is.\n");
+            w.write("# the play key plays the first locked world (oldest lock) while there is one, wherever the mouse is.\n");
             w.write("# clicking still plays the world you click\n");
             w.write("playLockedFirst=" + playLockedFirst + "\n\n");
             w.write("# true: leaving a locked world (reset key, Save and Quit, or dying) goes straight into the next locked world,\n");
@@ -228,8 +226,6 @@ public final class Config {
             w.write("resetLoadingWorlds=" + resetLoadingWorlds + "\n\n");
             w.write("# keys use LWJGL names: W, E, Y, F6, LSHIFT, NUMPAD1 and so on. NONE turns a key off\n");
             w.write("keyPlay=" + name(keyPlay) + "\n");
-            w.write("# an optional second play key, NONE by default\n");
-            w.write("keyPlay2=" + name(keyPlay2) + "\n");
             w.write("keyReset=" + name(keyReset) + "\n");
             w.write("keyResetAll=" + name(keyResetAll) + "\n");
             w.write("keyFocusReset=" + name(keyFocusReset) + "\n");
@@ -248,8 +244,8 @@ public final class Config {
 
     // the wall checks resetAll, then focusReset, then play, reset and lock, so a key in two of them only does the first
     private void warnDuplicateKeys() {
-        String[] names = {"keyResetAll", "keyFocusReset", "keyPlay", "keyPlay2", "keyReset", "keyLock"};
-        int[] keys = {keyResetAll, keyFocusReset, keyPlay, keyPlay2, keyReset, keyLock};
+        String[] names = {"keyResetAll", "keyFocusReset", "keyPlay", "keyReset", "keyLock"};
+        int[] keys = {keyResetAll, keyFocusReset, keyPlay, keyReset, keyLock};
         for (int i = 0; i < keys.length; i++) {
             for (int j = i + 1; j < keys.length; j++) {
                 if (keys[i] != Keyboard.KEY_NONE && keys[i] == keys[j]) {
