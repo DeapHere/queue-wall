@@ -162,7 +162,7 @@ public final class SettingsScreen extends Screen {
             Entry e = entries.get(index);
             int left = SettingsScreen.this.width / 2 - 110;
             if (e.isHeading()) {
-                SettingsScreen.this.drawCenteredString(SettingsScreen.this.textRenderer, e.name, SettingsScreen.this.width / 2, y + 8, 0xFFFF55);
+                SettingsScreen.this.drawCenteredString(SettingsScreen.this.textRenderer, e.name, SettingsScreen.this.width / 2, y + 8, 0xFFFFFF);
                 return;
             }
             String label = e == waitingForKey ? "> " + e.name + " <" : e.label();
