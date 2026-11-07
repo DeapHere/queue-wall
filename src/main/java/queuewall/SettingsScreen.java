@@ -46,7 +46,6 @@ public final class SettingsScreen extends Screen {
         bool("Focus reset plays", "On: the focus reset key plays that world and resets the rest", () -> c.focusResetPlays, v -> c.focusResetPlays = v);
         heading("Locked worlds");
         bool("Locked area (restart)", "Locked worlds move to an area along the top", () -> c.lockedRow, v -> c.lockedRow = v);
-        num("Locked area height %", "Height of the locked area, in % of the screen", 10, 40, () -> c.lockedRowHeight, v -> c.lockedRowHeight = v);
         num("Locked max", "How many worlds the locked area holds", 1, 16, () -> c.lockedMax, v -> c.lockedMax = v);
         num("Locked rows", "0 = picked from Locked max", 0, 4, () -> c.lockedRows, v -> c.lockedRows = v);
         num("Locked columns", "0 = picked from Locked max", 0, 16, () -> c.lockedColumns, v -> c.lockedColumns = v);

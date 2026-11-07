@@ -35,7 +35,6 @@ public final class Config {
     public boolean showHints = true;
     public boolean showLoadingPercent = true;
     public boolean lockedRow = true;
-    public int lockedRowHeight = 25;
     public int lockedMax = 12;
     public int lockedRows = 0;
     public int lockedColumns = 0;
@@ -144,7 +143,6 @@ public final class Config {
         c.showHints = b(p, "showHints", c.showHints);
         c.showLoadingPercent = b(p, "showLoadingPercent", c.showLoadingPercent);
         c.lockedRow = b(p, "lockedRow", c.lockedRow);
-        c.lockedRowHeight = clamp(i(p, "lockedRowHeight", c.lockedRowHeight), 10, 40);
         c.lockedMax = clamp(i(p, "lockedMax", c.lockedMax), 1, 16);
         c.lockedRows = clamp(i(p, "lockedRows", c.lockedRows), 0, 4);
         c.lockedColumns = clamp(i(p, "lockedColumns", c.lockedColumns), 0, 16);
@@ -207,9 +205,8 @@ public final class Config {
             w.write("# recording shows each world's progress legibly (A.9.3). false = exactly the vanilla loading screen\n");
             w.write("showLoadingPercent=" + showLoadingPercent + "\n\n");
             w.write("# locking a world moves it to an area along the top of the wall, and its wall slot gets a new world.\n");
-            w.write("# lockedRowHeight is that area's height in percent of the screen (10 to 40), lockedMax how many worlds it holds (1 to 16)\n");
+            w.write("# lockedMax is how many worlds the locked area holds (1 to 16)\n");
             w.write("lockedRow=" + lockedRow + "\n");
-            w.write("lockedRowHeight=" + lockedRowHeight + "\n");
             w.write("lockedMax=" + lockedMax + "\n");
             w.write("# rows and columns of the locked area. 0 picks them from lockedMax so each world keeps roughly the screen's shape.\n");
             w.write("# with both set, the area holds lockedRows x lockedColumns worlds and lockedMax is ignored\n");

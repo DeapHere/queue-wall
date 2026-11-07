@@ -73,7 +73,7 @@ public class WallScreen extends Screen {
     private int[] rect(int place, int w, int h) {
         int slotCount = slots().length;
         int lockedCount = cfg().lockedRowSize();
-        int top = lockedCount > 0 ? h * cfg().lockedRowHeight / 100 : 0;
+        int top = lockedCount > 0 ? h / 4 : 0;
         if (place >= slotCount) {
             // the locked area is a grid with as many rows as keep its tiles closest to the screen's shape
             int rows = 1;

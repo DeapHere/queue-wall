@@ -77,7 +77,6 @@ Mouse: left click plays, right click resets, Shift + left click locks. Each can 
 | `showHints` | true | Key hints along the bottom of the wall |
 | `showLoadingPercent` | true | Show a % under each slot's loading bar |
 | `lockedRow` | true | Move locked worlds to a row along the top |
-| `lockedRowHeight` | 25 | Height of the locked area, in percent of the screen |
 | `lockedRows`, `lockedColumns` | 0, 0 | Layout of the locked area. 0 = automatic |
 | `lockedMax` | 12 | Maximum number of locked worlds (1 to 16) |
 | `chainLockedWorlds` | false | Leaving a locked world goes straight into the next locked one |
