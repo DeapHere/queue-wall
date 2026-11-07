@@ -160,6 +160,22 @@ public final class WorldQueue {
         return name;
     }
 
+    /** After the settings were reloaded: the generator thread count can change while the game runs. */
+    void applySettings() {
+        if (generators instanceof java.util.concurrent.ThreadPoolExecutor) {
+            java.util.concurrent.ThreadPoolExecutor pool = (java.util.concurrent.ThreadPoolExecutor) generators;
+            int n = cfg.generatorThreads;
+            // the order matters: the core size can't go above the maximum, nor the maximum below the core size
+            if (n > pool.getMaximumPoolSize()) {
+                pool.setMaximumPoolSize(n);
+                pool.setCorePoolSize(n);
+            } else {
+                pool.setCorePoolSize(n);
+                pool.setMaximumPoolSize(n);
+            }
+        }
+    }
+
     /** Keeps slots + backgroundWorlds worlds queued. */
     void topUp() {
         worlds.removeIf(q -> {

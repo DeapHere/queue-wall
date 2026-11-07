@@ -52,6 +52,16 @@ public final class QueueWall {
         mc.openScreen(new WallScreen());
     }
 
+    /** Picks up edits to queuewall.properties made while the game is open. */
+    static void reloadSettings() {
+        if (cfg != null && cfg.reloadIfChanged() && queue != null) queue.applySettings();
+    }
+
+    /** After the settings screen wrote the file. */
+    static void applySettingsScreen() {
+        if (cfg != null && cfg.reload(true) && queue != null) queue.applySettings();
+    }
+
     static void onWallOpened() {
         returnToWall = false;
     }

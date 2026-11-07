@@ -37,7 +37,7 @@ Fabric mod for Minecraft 1.0 (Fabric Loader 0.18.1 or newer, with Ornithe interm
 1. Make a 1.0 instance (or 1.1 to 1.2.5) with Fabric Loader (0.20.1 is current) and Ornithe intermediary, for example from the instance generator at https://mc.sr/mods/generate/. Ornithe isn't a separate install: in MultiMC or Prism it's the "Intermediary Mappings" component listed under the instance's Version page, next to Fabric Loader.
 2. Put `queuewall-<version>.jar` in the instance's `.minecraft/mods` folder.
 3. Start the game. The title screen is unchanged. Create a world through Singleplayer as usual, or press **Y** on the title screen to open the wall.
-4. Settings are in `.minecraft/config/queuewall.properties`, which is created on first start. Restart the game after changing it.
+4. Settings are in `.minecraft/config/queuewall.properties`, which is created on first start. They can also be changed in game: Options on the title screen, then the QW button in the top right. Changes apply the next time the wall opens, except `rows`, `columns` and `lockedRow`, which need a restart.
 
 Each queued world uses roughly 40 MB of memory. The defaults (4 on the wall, 4 behind it) fit in 2 GB. Allocate more for larger queues.
 
@@ -47,8 +47,8 @@ Hover the mouse over a world, then:
 
 | Key | Action |
 |---|---|
-| W or E | Play this world (or the oldest locked world, with `playLockedFirst`) |
-| Y | Reset this world |
+| W | Play this world (or the oldest locked world, with `playLockedFirst`) |
+| Y | Reset this world (once it shows a preview, unless `resetLoadingWorlds` is on) |
 | T | Reset every world on the wall. Locked worlds are kept |
 | F | Focus reset: reset the world under the mouse. With `focusResetPlays=true`, play it and reset the rest of the wall instead |
 | R | Lock or unlock this world |
@@ -83,8 +83,9 @@ Mouse: left click plays, right click resets, Shift + left click locks. Each can 
 | `chainLockedWorlds` | false | Leaving a locked world goes straight into the next locked one |
 | `playLockedFirst` | false | The play key plays the oldest locked world first |
 | `focusResetPlays` | false | See the F key above |
+| `resetLoadingWorlds` | false | Let the reset keys and right click reset worlds that are still loading |
 | `clickToPlay`, `clickToReset`, `clickToLock` | true | Mouse controls |
-| `keyPlay`, `keyPlay2`, `keyReset`, `keyResetAll`, `keyFocusReset`, `keyLock`, `keyOpenWall`, `keyResetWhilePlaying`, `keyResetWhilePlaying2` | W, E, Y, T, F, R, Y, Y, F6 | LWJGL key names. `NONE` disables a key |
+| `keyPlay`, `keyPlay2`, `keyReset`, `keyResetAll`, `keyFocusReset`, `keyLock`, `keyOpenWall`, `keyResetWhilePlaying`, `keyResetWhilePlaying2` | W, NONE, Y, T, F, R, Y, Y, F6 | LWJGL key names. `NONE` disables a key |
 
 Worlds are named `New World 1`, `New World 2` and so on. Folders with any other name are never touched.
 

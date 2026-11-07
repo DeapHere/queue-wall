@@ -30,6 +30,7 @@ public class WallScreen extends Screen {
         this.minecraft.options.debugEnabled = false;
         this.minecraft.gui.clearChat();
         QueueWall.startQueue(this.minecraft);
+        QueueWall.reloadSettings();
         QueueWall.onWallOpened();
         QueueWall.queue.topUp();
     }
@@ -220,7 +221,7 @@ public class WallScreen extends Screen {
 
         if (cfg().showHints) {
             String hint = "Play " + key(cfg().keyPlay) + "  Reset " + key(cfg().keyReset) + "  Reset all " + key(cfg().keyResetAll)
-                    + (cfg().focusResetPlays ? "  Play + reset others " : "  Focus reset ") + key(cfg().keyFocusReset) + "  Lock " + key(cfg().keyLock) + "  Title screen Esc";
+                    + (cfg().focusResetPlays ? "  Play + reset others " : "  Focus reset ") + key(cfg().keyFocusReset) + "  Lock " + key(cfg().keyLock) + (cfg().clickToLock ? " / Shift+click" : "") + "  Title screen Esc";
             int w = this.textRenderer.getWidth(hint);
             this.fillGradient(this.width / 2 - w / 2 - 3, this.height - 12, this.width / 2 + w / 2 + 3, this.height, 0x90000000, 0x90000000);
             this.drawString(this.textRenderer, hint, this.width / 2 - w / 2, this.height - 10, 0xFFFFFF);
@@ -349,6 +350,8 @@ public class WallScreen extends Screen {
     }
 
     private void reset(QueuedWorld q) {
+        // a world that's still loading keeps generating unless resetLoadingWorlds is on
+        if (!q.isReady() && !cfg().resetLoadingWorlds) return;
         release(q);
         QueueWall.reset(q);
     }

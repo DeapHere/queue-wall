@@ -41,9 +41,10 @@ public final class Config {
     public int lockedColumns = 0;
     public boolean playLockedFirst = false;
     public boolean chainLockedWorlds = false;
+    public boolean resetLoadingWorlds = false;
 
     public int keyPlay = Keyboard.KEY_W;
-    public int keyPlay2 = Keyboard.KEY_E;
+    public int keyPlay2 = Keyboard.KEY_NONE;
     public int keyReset = Keyboard.KEY_Y;
     public int keyResetAll = Keyboard.KEY_T;
     public int keyFocusReset = Keyboard.KEY_F;
@@ -54,9 +55,58 @@ public final class Config {
 
     private static final int VERSION = 2;
 
+    /** When the settings file was last read or written, to see whether it was edited while the game is open. */
+    private long readStamp;
+    private File file;
+
     public static Config load(File dir) {
+        Config c = read(new File(dir, "queuewall.properties"));
+        c.save(c.file);
+        c.readStamp = c.file.lastModified();
+        return c;
+    }
+
+    /**
+     * Applies queuewall.properties again if it was edited since it was last read, so most settings change without a
+     * restart. The wall layout (rows, columns, lockedRow) stays as the game started with it. Returns whether it reloaded.
+     */
+    public boolean reloadIfChanged() {
+        return reload(false);
+    }
+
+    boolean reload(boolean always) {
+        if (file == null || (!always && file.lastModified() == readStamp)) return false;
+        Config n = read(file);
+        readStamp = file.lastModified();
+        try {
+            for (java.lang.reflect.Field fd : Config.class.getDeclaredFields()) {
+                int m = fd.getModifiers();
+                if (java.lang.reflect.Modifier.isStatic(m) || !java.lang.reflect.Modifier.isPublic(m)) continue;
+                String name = fd.getName();
+                if (name.equals("rows") || name.equals("columns") || name.equals("lockedRow")) continue;
+                fd.set(this, fd.get(n));
+            }
+        } catch (IllegalAccessException e) {
+            System.out.println("[Queue Wall] couldn't apply the settings: " + e);
+            return false;
+        }
+        System.out.println("[Queue Wall] settings reloaded");
+        return true;
+    }
+
+    /** A separate copy read from the file, for the settings screen to edit. */
+    Config copyFromFile() {
+        return read(file);
+    }
+
+    /** Writes this copy to the settings file. The live settings pick it up with reloadIfChanged. */
+    void writeFile() {
+        save(file);
+    }
+
+    private static Config read(File f) {
         Config c = new Config();
-        File f = new File(dir, "queuewall.properties");
+        c.file = f;
         Properties p = new Properties();
         if (f.isFile()) {
             try (InputStream in = new FileInputStream(f)) {
@@ -110,15 +160,15 @@ public final class Config {
         c.keyOpenWall = k(p, "keyOpenWall", c.keyOpenWall);
         c.keyResetWhilePlaying = k(p, "keyResetWhilePlaying", c.keyResetWhilePlaying);
         c.keyResetWhilePlaying2 = k(p, "keyResetWhilePlaying2", c.keyResetWhilePlaying2);
+        c.resetLoadingWorlds = b(p, "resetLoadingWorlds", c.resetLoadingWorlds);
         c.warnDuplicateKeys();
-        c.save(f);
         return c;
     }
 
     private void save(File f) {
         f.getParentFile().mkdirs();
         try (OutputStream out = new FileOutputStream(f); Writer w = new OutputStreamWriter(out, StandardCharsets.ISO_8859_1)) {
-            w.write("# Queue Wall settings. Restart the game after changing them.\n");
+            w.write("# Queue Wall settings. Changes apply the next time the wall opens, except rows, columns and lockedRow, which need a restart.\n");
             w.write("configVersion=" + VERSION + "\n\n");
             w.write("# wall layout, 1 to 4 each\n");
             w.write("rows=" + rows + "\ncolumns=" + columns + "\n\n");
@@ -173,8 +223,12 @@ public final class Config {
             w.write("# true: leaving a locked world (reset key, Save and Quit, or dying) goes straight into the next locked world,\n");
             w.write("# and the wall comes back once every locked world has been played. false: always back to the wall\n");
             w.write("chainLockedWorlds=" + chainLockedWorlds + "\n\n");
+            w.write("# true: the reset keys and right click also reset worlds that are still loading. false: they only reset\n");
+            w.write("# worlds showing a preview, so spamming reset can't throw away worlds that are partly generated\n");
+            w.write("resetLoadingWorlds=" + resetLoadingWorlds + "\n\n");
             w.write("# keys use LWJGL names: W, E, Y, F6, LSHIFT, NUMPAD1 and so on. NONE turns a key off\n");
             w.write("keyPlay=" + name(keyPlay) + "\n");
+            w.write("# an optional second play key, NONE by default\n");
             w.write("keyPlay2=" + name(keyPlay2) + "\n");
             w.write("keyReset=" + name(keyReset) + "\n");
             w.write("keyResetAll=" + name(keyResetAll) + "\n");
