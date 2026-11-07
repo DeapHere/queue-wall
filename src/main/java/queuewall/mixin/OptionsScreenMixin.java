@@ -65,7 +65,8 @@ public abstract class OptionsScreenMixin extends Screen {
             int x = Math.max(4, b.x - w - 7);
             int y = b.y + 6;
             this.fillGradient(x - 3, y - 3, x + w + 3, y + 8 + 3, 0xC0000000, 0xC0000000);
-            this.textRenderer.drawWithShadow(text, x, y, 0xFFFFFF);
+            // drawString, not textRenderer.drawWithShadow: that one returns void on 1.0 and int from 1.2, so a call built against 1.0 crashes on 1.2.5
+            this.drawString(this.textRenderer, text, x, y, 0xFFFFFF);
         }
     }
 
