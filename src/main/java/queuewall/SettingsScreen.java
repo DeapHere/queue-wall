@@ -116,18 +116,40 @@ public final class SettingsScreen extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float tickDelta) {
         list.render(mouseX, mouseY, tickDelta);
-        this.drawCenteredString(this.textRenderer, "Queue Wall Settings", this.width / 2, 8, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, "Queue Wall Settings", this.width / 2, 6, 0xFFFFFF);
         String help = null;
         if (mouseY >= TOP && mouseY <= this.height - BOTTOM) {
             int i = list.getEntryAt(mouseX, mouseY);
             if (i >= 0) help = entries.get(i).help();
         }
         if (waitingForKey != null) help = "Press a key. Escape cancels, Delete turns it off";
-        if (help != null) this.drawCenteredString(this.textRenderer, help, this.width / 2, 20, 0xA0A0A0);
+        if (help != null) {
+            // wrapped to the screen width, at most two lines between the title and the list
+            List<String> lines = wrap(help, this.width - 16);
+            for (int l = 0; l < lines.size() && l < 2; l++) {
+                this.drawCenteredString(this.textRenderer, lines.get(l), this.width / 2, 18 + l * 10, 0xA0A0A0);
+            }
+        }
         super.render(mouseX, mouseY, tickDelta);
     }
 
-    private static final int TOP = 32, BOTTOM = 36, ROW = 24;
+    private List<String> wrap(String text, int maxWidth) {
+        List<String> lines = new ArrayList<>();
+        String line = "";
+        for (String word : text.split(" ")) {
+            String next = line.isEmpty() ? word : line + " " + word;
+            if (!line.isEmpty() && this.textRenderer.getWidth(next) > maxWidth) {
+                lines.add(line);
+                line = word;
+            } else {
+                line = next;
+            }
+        }
+        if (!line.isEmpty()) lines.add(line);
+        return lines;
+    }
+
+    private static final int TOP = 40, BOTTOM = 36, ROW = 24;
     private SettingsList list;
 
     /** The same scrolling list as Select World: mouse wheel, dragging, or the scrollbar on the right. */
