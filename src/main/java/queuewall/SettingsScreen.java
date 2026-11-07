@@ -116,7 +116,7 @@ public final class SettingsScreen extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float tickDelta) {
         list.render(mouseX, mouseY, tickDelta);
-        this.drawCenteredString(this.textRenderer, "Queue Wall settings", this.width / 2, 8, 0xFFFFFF);
+        this.drawCenteredString(this.textRenderer, "Queue Wall Settings", this.width / 2, 8, 0xFFFFFF);
         String help = null;
         if (mouseY >= TOP && mouseY <= this.height - BOTTOM) {
             int i = list.getEntryAt(mouseX, mouseY);

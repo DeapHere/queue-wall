@@ -46,7 +46,7 @@ public abstract class OptionsScreenMixin extends Screen {
         }
     }
 
-    // the vanilla book icon on the settings button, and a "Queue Wall settings" tooltip while the mouse is over it
+    // the vanilla book icon on the settings button, and a "Queue Wall Settings" tooltip while the mouse is over it
     @Inject(method = "render", at = @At("TAIL"))
     private void queuewall$renderSettingsButton(int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
         ButtonWidget b = this.queuewall$settingsButton;
@@ -59,7 +59,7 @@ public abstract class OptionsScreenMixin extends Screen {
         this.drawTexture(b.x + 2, b.y + 2, 11 * 16, 3 * 16, 16, 16);
         GL11.glDisable(GL11.GL_BLEND);
         if (mouseX >= b.x && mouseY >= b.y && mouseX < b.x + 20 && mouseY < b.y + 20) {
-            String text = "Queue Wall settings";
+            String text = "Queue Wall Settings";
             int w = this.textRenderer.getWidth(text);
             // to the left of the button, so it doesn't cover the book
             int x = Math.max(4, b.x - w - 7);
